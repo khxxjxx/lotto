@@ -1,6 +1,8 @@
+import { add, format } from 'date-fns';
 import { NextResponse } from 'next/server';
 
 interface LottoResponse {
+  returnValue: 'success' | 'fail';
   drwNo: number; // 회차
   drwNoDate: string; // 추첨일
   drwtNo1: number; // 당첨번호 1
@@ -12,18 +14,13 @@ interface LottoResponse {
   bnusNo: number; // 보너스 번호
 }
 
-export async function GET() {
-  try {
-    // 최신 회차 조회를 위해 현재 날짜 기준으로 회차 계산
-    const startDate = new Date('2002-12-07'); // 로또 1회차 시작일
-    const today = new Date();
-    const diffWeeks = Math.floor(
-      (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
-    );
-    const currentRound = diffWeeks + 1;
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const round = searchParams.get('round') || '1';
 
+  try {
     const response = await fetch(
-      `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${currentRound}`,
+      `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`,
     );
 
     if (!response.ok) {
@@ -31,6 +28,21 @@ export async function GET() {
     }
 
     const data: LottoResponse = await response.json();
+
+    if (data.returnValue === 'fail') {
+      const startDate = new Date('2002-12-07'); // 로또 1회차 시작일
+      const drwNoDate = add(startDate, { weeks: Number(round) - 1 });
+
+      return NextResponse.json({
+        success: true,
+        data: {
+          numbers: [],
+          bonusNumber: 0,
+          round,
+          date: format(drwNoDate, 'yyyy-MM-dd'),
+        },
+      });
+    }
 
     // 당첨번호 배열로 변환
     const winningNumbers = [
@@ -43,15 +55,18 @@ export async function GET() {
     ].sort((a, b) => a - b);
 
     return NextResponse.json({
-      numbers: winningNumbers,
-      bonusNumber: data.bnusNo,
-      round: data.drwNo,
-      date: data.drwNoDate,
+      success: true,
+      data: {
+        numbers: winningNumbers,
+        bonusNumber: data.bnusNo,
+        round: data.drwNo,
+        date: data.drwNoDate,
+      },
     });
   } catch {
-    return NextResponse.json(
-      { error: '당첨번호를 가져오는데 실패했습니다.' },
-      { status: 500 },
-    );
+    return NextResponse.json({
+      success: false,
+      message: '당첨번호를 가져오는데 실패했습니다.',
+    });
   }
 }

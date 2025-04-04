@@ -1,39 +1,45 @@
 'use client';
 
-import { generateLottoNumbers, getNumberColor } from '@/utils';
 import _ from 'lodash';
+import Link from 'next/link';
+import { useQuery } from 'react-query';
 import { useState, useEffect } from 'react';
 
-interface WinningInfo {
-  numbers: number[];
-  bonusNumber: number;
-  round: number;
-  date: string;
-}
+import { useStore } from '@/hooks';
+import { getDrawInfo } from './api/lotto';
+import { useLottoStore } from '@/store/lotto';
+import { generateLottoNumbers, getCurrentRound, getNumberColor } from '@/utils';
+import { Button } from '@/components';
 
 export default function LottoGenerator() {
-  const [winningInfo, setWinningInfo] = useState<WinningInfo | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const currentRound = getCurrentRound();
+
+  const { data, isLoading } = useQuery({
+    queryKey: ['getDrawInfo', currentRound],
+    queryFn: () => getDrawInfo(currentRound),
+  });
 
   const [lottoNumbers, setLottoNumbers] = useState<number[][]>([]);
+  const { savedLottos, setSavedLottos } = useStore(
+    useLottoStore,
+    (state) => state,
+  );
 
-  useEffect(() => {
-    fetchWinningNumbers();
-    setLottoNumbers(getLottoNumbers());
-  }, []);
+  const saveLottoNumbers = (round: number, lottoNumbers: number[][]) => {
+    const prevSavedLottoNumbers = savedLottos[round];
 
-  const fetchWinningNumbers = async () => {
-    try {
-      const response = await fetch('/api/lotto');
-      if (!response.ok) throw new Error('당첨번호 조회에 실패했습니다');
-      const data = await response.json();
-      setWinningInfo(data);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : '오류가 발생했습니다');
-    } finally {
-      setLoading(false);
-    }
+    if (!prevSavedLottoNumbers)
+      return setSavedLottos({ [round]: lottoNumbers });
+
+    const newSavedLottoNumbers = _.differenceWith(
+      lottoNumbers,
+      prevSavedLottoNumbers,
+      _.isEqual,
+    );
+
+    setSavedLottos({
+      [round]: [...prevSavedLottoNumbers, ...newSavedLottoNumbers],
+    });
   };
 
   const getLottoNumbers = () => {
@@ -51,17 +57,14 @@ export default function LottoGenerator() {
     return lottoNumbers;
   };
 
-  if (loading)
+  useEffect(() => {
+    setLottoNumbers(getLottoNumbers());
+  }, []);
+
+  if (isLoading)
     return (
       <div className='flex justify-center items-center h-screen'>
         <div className='text-xl'>로딩 중...</div>
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className='flex justify-center items-center h-screen'>
-        <div className='text-xl text-red-500'>{error}</div>
       </div>
     );
 
@@ -69,64 +72,94 @@ export default function LottoGenerator() {
     <main className='flex flex-col items-center p-8 min-h-screen'>
       <h1 className='text-3xl font-bold mb-8'>퇴사 기원 로또</h1>
 
-      {winningInfo && (
-        <div className='w-full max-w-2xl bg-gray-50 p-4 rounded-lg mb-8'>
-          <h3 className='text-l font-semibold text-center mb-4'>
-            {winningInfo.round}회차 당첨 번호 ({winningInfo.date})
-          </h3>
-          <div className='flex justify-center items-center gap-2'>
-            {winningInfo.numbers.map((number, index) => (
-              <div
-                key={index}
-                className={`w-7 h-7 ${getNumberColor(
-                  number,
-                )} rounded-full flex items-center text-[12px] justify-center text-white font-bold`}
-              >
-                {number}
-              </div>
-            ))}
-            <div className='mx-2 text-xl'>+</div>
-            <div
-              className={`w-7 h-7 ${getNumberColor(
-                winningInfo.bonusNumber,
-              )} rounded-full flex items-center text-[12px] justify-center text-white font-bold border-2`}
-            >
-              {winningInfo.bonusNumber}
+      {data && <DrawInfo {...data} />}
+
+      <div className='flex flex-col gap-8 py-8'>
+        {lottoNumbers.map((numbers, index) => (
+          <div key={index} className='flex gap-6 items-center'>
+            <div className='grid grid-cols-[repeat(6,minmax(0,48px))] gap-2 w-fit'>
+              {numbers.map((number) => (
+                <div
+                  key={number}
+                  className={`aspect-square w-full h-full ${getNumberColor(
+                    number,
+                  )} rounded-full flex items-center justify-center text-white font-bold`}
+                >
+                  {number}
+                </div>
+              ))}
             </div>
+
+            <Button
+              width='auto'
+              variant='outlined'
+              size='sm'
+              onClick={() => saveLottoNumbers(currentRound, [numbers])}
+            >
+              저장
+            </Button>
           </div>
-        </div>
-      )}
+        ))}
+      </div>
 
-      {lottoNumbers.map((numbers, index) => (
-        <div
-          key={index}
-          className='flex justify-center gap-2 mb-8 items-center'
-        >
-          {numbers.map((number) => (
-            <div
-              key={number}
-              className={`w-12 h-12 ${getNumberColor(
-                number,
-              )} rounded-full flex items-center justify-center text-white font-bold`}
-            >
-              {number}
-            </div>
-          ))}
-
-          {/* <Button className='ml-4' width='auto' variant='outlined' size='sm'>
-            저장
-          </Button> */}
-        </div>
-      ))}
-
-      {/* <div className='flex gap-4 mb-8'>
+      <div className='flex gap-4'>
         <Link href='/save'>
           <Button onClick={generateLottoNumbers}>저장된 번호 보기</Button>
         </Link>
-        <Button variant='outlined' onClick={saveNumbers}>
+        <Button
+          variant='outlined'
+          onClick={() => saveLottoNumbers(currentRound, lottoNumbers)}
+        >
           전체 저장
         </Button>
-      </div> */}
+      </div>
     </main>
   );
 }
+
+const DrawInfo = (props: Result<DrawInfo>) => {
+  const { success, data, message } = props;
+
+  return (
+    <div className='flex justify-center w-full max-w-2xl bg-gray-50 p-4 rounded-lg'>
+      {success ? (
+        <div className='flex flex-col gap-4'>
+          <h3 className='text-l font-semibold text-center'>
+            {data.round}회차 당첨 번호 ({data.date})
+          </h3>
+
+          <div className='flex justify-center items-center gap-2'>
+            {_.isEmpty(data.numbers) ? (
+              <span>아직 추첨전 입니다.</span>
+            ) : (
+              <div className='grid grid-cols-[repeat(8,minmax(0,40px))] gap-2 w-fit'>
+                {data.numbers.map((number, index) => (
+                  <div
+                    key={index}
+                    className={`aspect-square ${getNumberColor(
+                      number,
+                    )} rounded-full flex items-center text-[14px] justify-center text-white font-bold`}
+                  >
+                    {number}
+                  </div>
+                ))}
+                <div className='flex items-center justify-center text-xl'>
+                  +
+                </div>
+                <div
+                  className={`aspect-square ${getNumberColor(
+                    data.bonusNumber,
+                  )} rounded-full flex items-center text-[14px] justify-center text-white font-bold border-2`}
+                >
+                  {data.bonusNumber}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      ) : (
+        <span>{message}</span>
+      )}
+    </div>
+  );
+};
