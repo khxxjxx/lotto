@@ -1,6 +1,6 @@
 import { getCurrentRound } from '@/utils';
-import { getDrawInfo } from './api/lotto';
-import LottoGenerator from './LottoGenerator';
+import { getDrawInfo } from '../api/lotto';
+import LottoGenerator from '../LottoGenerator';
 
 const Page = async () => {
   const currentRound = getCurrentRound();
@@ -9,7 +9,7 @@ const Page = async () => {
 
   return (
     <LottoGenerator
-      title='퇴사 기원 로또'
+      title='행운 희진 로또'
       round={currentRound}
       drawInfo={drawInfo}
     />
