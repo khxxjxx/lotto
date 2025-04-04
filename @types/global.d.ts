@@ -1,12 +1,12 @@
 interface SuccessResponse<T> {
   success: true;
   data: T;
-  message?: unknown;
+  message?: undefined;
 }
 
 interface FailResponse {
   success: false;
-  data?: unknown;
+  data?: undefined;
   message: string;
 }
 
