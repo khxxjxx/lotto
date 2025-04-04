@@ -33,7 +33,7 @@ const Button = (props: IButtonProps) => {
     contained:
       'bg-primary-charcoal hover:bg-black-80 text-white shadow-[0_4px_5px_#00000026]',
     outlined:
-      'bg-white border border-primary-charcoal text-primary-charcoal hover:border-black-80 hover:text-black-80 shadow-[0_4px_5px_#00000014]',
+      'bg-white outline-1 outline-primary-charcoal text-primary-charcoal hover:outline-black-80 hover:text-black-80 shadow-[0_4px_5px_#00000014]',
     disabled: 'bg-black-10 text-black-40',
 
     sm: 'h-[32px] text-[14px] px-[8px] rounded-[6px] [&.withIcon]:px-[12px] leading-[14px]',

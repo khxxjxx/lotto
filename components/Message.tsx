@@ -19,7 +19,7 @@ class Message {
     this.message('success', content, timeout);
   };
 
-  message(type: string, content: string, timeout = 1000) {
+  message(type: string, content: string, timeout = 1200) {
     const container = document.createElement('div');
     container.className =
       'fixed left-1/2 translate-x-[-50%] top-[200px] z-[999] max-w-[80vw] w-max animate-slideInOut';

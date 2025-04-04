@@ -51,7 +51,9 @@ const LottoNumberList = (props: {
       {lottoNumbers.map((numbers, index) => (
         <div key={index} className='flex gap-6 items-center'>
           {drawInfo ? (
-            <span className='font-semibold'>{getRanking(numbers)}</span>
+            <span className='text-center font-semibold w-8'>
+              {getRanking(numbers)}
+            </span>
           ) : (
             ''
           )}
