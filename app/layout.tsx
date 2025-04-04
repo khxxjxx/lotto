@@ -4,7 +4,7 @@ import Body from './Body';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '로또',
+  title: '퇴사 기원 로또',
   description: '퇴사 기원 로또',
 };
 
