@@ -1,6 +1,10 @@
 const getCurrentRound = () => {
+  const date = new Date();
+  const utc = date.getTime() + date.getTimezoneOffset() * 60 * 1000;
+  const koreaTime = new Date(utc + 9 * 60 * 60 * 1000);
+
   const startDate = new Date('2002-12-07'); // 로또 1회차 시작일
-  const today = new Date();
+  const today = koreaTime;
   const diffWeeks = Math.floor(
     (today.getTime() - startDate.getTime()) / (7 * 24 * 60 * 60 * 1000),
   );
