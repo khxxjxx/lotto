@@ -3,14 +3,47 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { message } from '@/components';
 
-interface ILottoStore {
+interface IHydrationStore {
+  _hasHydrated: boolean;
+  setHasHydrated: (state: boolean) => void;
+}
+
+interface IGenerateLottoStore {
+  lottoNumbers: number[][];
+  setLottoNumbers: (lottoNumbers: number[][]) => void;
+}
+
+interface ISavedLottoStore {
   savedLottos: Record<number, number[][]>;
   saveLottos: (round: number, saveLottos: number[][]) => void;
   removeLottos: (round: number, deleteLottos: number[][]) => void;
 }
 
-export const useLottoStore = create(
-  persist<ILottoStore>(
+export const useHydrationStore = create(
+  persist<IHydrationStore>(
+    (set) => ({
+      _hasHydrated: false,
+      setHasHydrated: (state) => set({ _hasHydrated: state }),
+    }),
+    {
+      name: '_hasHydrated',
+      onRehydrateStorage: (state) => () => state.setHasHydrated(true),
+    },
+  ),
+);
+
+export const useGenerateLottoStore = create(
+  persist<IGenerateLottoStore>(
+    (set) => ({
+      lottoNumbers: [],
+      setLottoNumbers: (lottoNumbers) => set({ lottoNumbers }),
+    }),
+    { name: 'lottoNumbers' },
+  ),
+);
+
+export const useSavedLottoStore = create(
+  persist<ISavedLottoStore>(
     (set) => ({
       savedLottos: {},
       saveLottos: (round: number, newLottos) => {

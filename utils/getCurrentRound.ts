@@ -15,7 +15,7 @@ const getCurrentRound = () => {
   // 토요일 8시 이전이면 이전 주 회차로 처리하고 아니면 다음 회차
   const additionalRound = isBeforeTheDraw ? 0 : 1;
   const currentRound = diffWeeks + additionalRound;
-
+  console.log({ today });
   return currentRound;
 };
 

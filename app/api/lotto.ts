@@ -1,5 +1,6 @@
+'use server';
+
 import { add, format } from 'date-fns';
-import { NextResponse } from 'next/server';
 
 interface LottoResponse {
   returnValue: 'success' | 'fail';
@@ -14,10 +15,7 @@ interface LottoResponse {
   bnusNo: number; // 보너스 번호
 }
 
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const round = searchParams.get('round') || '1';
-
+export const getDrawInfo = async (round: number): FetchReturn<DrawInfo> => {
   try {
     const response = await fetch(
       `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`,
@@ -33,7 +31,7 @@ export async function GET(req: Request) {
       const startDate = new Date('2002-12-07'); // 로또 1회차 시작일
       const drwNoDate = add(startDate, { weeks: Number(round) - 1 });
 
-      return NextResponse.json({
+      return {
         success: true,
         data: {
           numbers: [],
@@ -41,10 +39,9 @@ export async function GET(req: Request) {
           round,
           date: format(drwNoDate, 'yyyy-MM-dd'),
         },
-      });
+      };
     }
 
-    // 당첨번호 배열로 변환
     const winningNumbers = [
       data.drwtNo1,
       data.drwtNo2,
@@ -54,7 +51,7 @@ export async function GET(req: Request) {
       data.drwtNo6,
     ].sort((a, b) => a - b);
 
-    return NextResponse.json({
+    return {
       success: true,
       data: {
         numbers: winningNumbers,
@@ -62,11 +59,8 @@ export async function GET(req: Request) {
         round: data.drwNo,
         date: data.drwNoDate,
       },
-    });
+    };
   } catch {
-    return NextResponse.json({
-      success: false,
-      message: '당첨번호를 가져오는데 실패했습니다.',
-    });
+    return { success: false, message: '당첨번호를 가져오는데 실패했습니다.' };
   }
-}
+};

@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { useStore } from '@/hooks';
 import { getNumberColor } from '@/utils';
-import { useLottoStore } from '@/store/lotto';
+import { useSavedLottoStore } from '@/store/lotto';
 import Button from './Button';
 
 const LottoNumberList = (props: {
@@ -13,8 +13,9 @@ const LottoNumberList = (props: {
   const { type = 'save', round, drawInfo, lottoNumbers = [] } = props;
   const isSaveType = type === 'save';
 
-  const lottoStore = useStore(useLottoStore, (state) => state);
-  const { savedLottos, saveLottos, removeLottos } = lottoStore;
+  const savedLottos = useStore(useSavedLottoStore, state => state.savedLottos);
+
+  const { saveLottos, removeLottos } = useSavedLottoStore();
 
   const buttonHandler = isSaveType ? saveLottos : removeLottos;
 
@@ -58,7 +59,7 @@ const LottoNumberList = (props: {
             ''
           )}
           <div className='grid grid-cols-[repeat(6,minmax(0,48px))] gap-2 w-fit'>
-            {numbers.map((number) => (
+            {numbers.map(number => (
               <div
                 key={number}
                 className={`${getNumberColor(number)} ${getMatchColor(
@@ -76,9 +77,7 @@ const LottoNumberList = (props: {
             size='sm'
             disabled={
               isSaveType &&
-              savedLottos[round + 1]?.some((lottos) =>
-                _.isEqual(lottos, numbers),
-              )
+              savedLottos[round + 1]?.some(lottos => _.isEqual(lottos, numbers))
             }
             onClick={() => buttonHandler(round, [numbers])}
           >

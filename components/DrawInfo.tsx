@@ -1,8 +1,21 @@
 import _ from 'lodash';
 import { getNumberColor } from '@/utils';
 
-const DrawInfo = (props: Result<DrawInfo>) => {
-  const { success, data, message } = props;
+const DrawInfo = (props: { result?: Result<DrawInfo> }) => {
+  if (!props.result) {
+    return (
+      <div className='w-full max-w-2xl bg-gray-50 p-4 rounded-lg'>
+        <div className='flex flex-col items-center gap-4 animate-pulse'>
+          <div className='h-6 w-52 rounded bg-gray-200' />
+          <div className='rounded bg-gray-200 grid grid-cols-[repeat(8,minmax(0,40px))] gap-2 w-fit'>
+            <div className='aspect-square' />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const { success, data, message } = props.result;
 
   return (
     <div className='flex justify-center w-full max-w-2xl bg-gray-50 p-4 rounded-lg'>

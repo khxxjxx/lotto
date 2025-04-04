@@ -4,7 +4,7 @@ interface IButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: React.ReactNode;
   width?: 'auto' | 'full';
   size?: 'sm' | 'md' | 'lg';
-  variant?: 'contained' | 'outlined';
+  variant?: 'contained' | 'outlined' | 'text';
   startIcon?: React.ReactNode;
   endIcon?: React.ReactNode;
   disabled?: boolean;
@@ -34,6 +34,7 @@ const Button = (props: IButtonProps) => {
       'bg-primary-charcoal hover:bg-black-80 text-white shadow-[0_4px_5px_#00000026]',
     outlined:
       'bg-white outline-1 outline-primary-charcoal text-primary-charcoal hover:outline-black-80 hover:text-black-80 shadow-[0_4px_5px_#00000014]',
+    text: 'hover:text-black-80 hover:bg-black-10 text-primary-charcoal',
     disabled: 'bg-black-10 text-black-40',
 
     sm: 'h-[32px] text-[14px] px-[8px] rounded-[6px] [&.withIcon]:px-[12px] leading-[14px]',
@@ -47,6 +48,7 @@ const Button = (props: IButtonProps) => {
     icon: {
       contained: 'fill-white',
       outlined: 'fill-primary-charcoal hover:fill-black-80',
+      text: 'fill-primary-charcoal hover:fill-black-80',
       disabled: 'fill-black-40',
 
       sm: 'w-[16px] h-[16px]',
@@ -61,7 +63,7 @@ const Button = (props: IButtonProps) => {
         styles[disabled ? 'disabled' : variant]
       } ${styles[size]} ${
         startIcon || endIcon ? `${styles.gap[size]}` : ''
-      } ${widthStyle} max-h-full py-[4px] font-medium`}
+      } ${widthStyle} max-h-full py-[4px] font-medium cursor-pointer`}
       disabled={!!disabled}
       {...restProps}
     >

@@ -1,6 +1,6 @@
-import generateLottoNumbers from './generateLottoNumbers';
 import getCurrentRound from './getCurrentRound';
+import getLottoNumbers from './getLottoNumbers';
 import getNumberColor from './getNumberColor';
 import getRank from './getRank';
 
-export { generateLottoNumbers, getCurrentRound, getNumberColor, getRank };
+export { getCurrentRound, getLottoNumbers, getNumberColor, getRank };

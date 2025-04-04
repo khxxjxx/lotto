@@ -6,8 +6,8 @@ import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useStore } from '@/hooks';
 import { getDrawInfo } from '../api/lotto';
-import { useLottoStore } from '@/store/lotto';
-import { DrawInfo, LottoNumberList } from '@/components';
+import { useHydrationStore, useSavedLottoStore } from '@/store/lotto';
+import { DrawInfo, Loading, LottoNumberList } from '@/components';
 
 const Page = () => {
   const router = useRouter();
@@ -15,7 +15,9 @@ const Page = () => {
   const [round, setRound] = useState<number>(0);
   const [savedRounds, setSavedRounds] = useState<number[]>([]);
 
-  const savedLottos = useStore(useLottoStore, (state) => state.savedLottos);
+  const _hasHydrated = useStore(useHydrationStore, state => state._hasHydrated);
+  const savedLottos = useStore(useSavedLottoStore, state => state.savedLottos);
+
   const hasSavedNumbers = Boolean(round) && !_.isEmpty(savedLottos[round]);
 
   const { data } = useQuery({
@@ -33,7 +35,9 @@ const Page = () => {
     setSavedRounds(savedRounds);
   }, [savedLottos]);
 
-  const drawInfo = data?.data?.bonusNumber ? data.data : undefined;
+  if (!_hasHydrated || !data) return <Loading />;
+
+  const drawInfo = data.data?.bonusNumber ? data.data : undefined;
 
   return (
     <main className='relative flex flex-col items-center p-8 min-h-screen'>
@@ -66,9 +70,9 @@ const Page = () => {
             <select
               id='round'
               className='border rounded-md px-1 outline-0'
-              onChange={(e) => setRound(Number(e.target.value))}
+              onChange={e => setRound(Number(e.target.value))}
             >
-              {savedRounds.map((round) => (
+              {savedRounds.map(round => (
                 <option key={round} value={String(round)}>
                   {String(round)}
                 </option>
@@ -76,8 +80,7 @@ const Page = () => {
             </select>
           </div>
 
-          {data && <DrawInfo {...data} />}
-
+          <DrawInfo result={data} />
           <LottoNumberList
             type='remove'
             round={round}
