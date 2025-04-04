@@ -1,8 +1,8 @@
+import _ from 'lodash';
 import { useStore } from '@/hooks';
 import { getNumberColor } from '@/utils';
 import { useLottoStore } from '@/store/lotto';
 import Button from './Button';
-import _ from 'lodash';
 
 const LottoNumberList = (props: {
   type?: 'save' | 'remove';
@@ -13,10 +13,9 @@ const LottoNumberList = (props: {
   const { type = 'save', round, drawInfo, lottoNumbers = [] } = props;
   const isSaveType = type === 'save';
 
-  const { saveLottos, removeLottos } = useStore(
-    useLottoStore,
-    (state) => state,
-  );
+  const lottoStore = useStore(useLottoStore, (state) => state);
+  const { savedLottos, saveLottos, removeLottos } = lottoStore;
+
   const buttonHandler = isSaveType ? saveLottos : removeLottos;
 
   function getRanking(numbers: number[]) {
@@ -73,6 +72,12 @@ const LottoNumberList = (props: {
             width='auto'
             variant='outlined'
             size='sm'
+            disabled={
+              isSaveType &&
+              savedLottos[round + 1]?.some((lottos) =>
+                _.isEqual(lottos, numbers),
+              )
+            }
             onClick={() => buttonHandler(round, [numbers])}
           >
             {isSaveType ? '저장' : '삭제'}

@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import { message } from '@/components';
 
 interface ILottoStore {
   savedLottos: Record<number, number[][]>;
@@ -12,7 +13,7 @@ export const useLottoStore = create(
   persist<ILottoStore>(
     (set) => ({
       savedLottos: {},
-      saveLottos: (round: number, newLottos) =>
+      saveLottos: (round: number, newLottos) => {
         set((state) => {
           // 저장시엔 다음 회차꺼 저장
           const nextRound = round + 1;
@@ -32,9 +33,12 @@ export const useLottoStore = create(
               [nextRound]: [...prevSavedLottoNumbers, ...newSavedLottoNumbers],
             },
           };
-        }),
+        });
 
-      removeLottos: (round: number, deleteLottos) =>
+        message.success('저장 완료');
+      },
+
+      removeLottos: (round: number, deleteLottos) => {
         set((state) => {
           const savedLottos = state.savedLottos;
           const prevSavedLottoNumbers = savedLottos[round];
@@ -51,7 +55,10 @@ export const useLottoStore = create(
               [round]: newSavedLottoNumbers,
             },
           };
-        }),
+        });
+
+        message.success('삭제 완료');
+      },
     }),
     { name: 'savedLottos' },
   ),
