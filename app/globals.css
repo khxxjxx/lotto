@@ -30,6 +30,8 @@
 }
 
 body {
+  max-width: 680px;
+  margin: auto;
   background: white;
   font-family: Arial, Helvetica, sans-serif;
 }
