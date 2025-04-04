@@ -25,7 +25,6 @@ const Page = () => {
   });
 
   useEffect(() => {
-    console.log(new Date());
     const savedRounds = Object.keys(savedLottos)
       .map(Number)
       .sort((a, b) => b - a);
