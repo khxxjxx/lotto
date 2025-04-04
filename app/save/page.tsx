@@ -35,12 +35,12 @@ const Page = () => {
     setSavedRounds(savedRounds);
   }, [savedLottos]);
 
-  if (!_hasHydrated || !data) return <Loading />;
+  if (!_hasHydrated) return <Loading />;
 
-  const drawInfo = data.data?.bonusNumber ? data.data : undefined;
+  const drawInfo = data?.data?.bonusNumber ? data.data : undefined;
 
   return (
-    <main className='relative flex flex-col items-center p-8 min-h-screen'>
+    <main className='relative flex flex-col items-center p-8 min-h-dvh'>
       <div
         className='flex items-center justify-center w-4 h-4 absolute left-8 top-10 cursor-pointer'
         onClick={router.back}
@@ -65,7 +65,7 @@ const Page = () => {
 
       {hasSavedNumbers ? (
         <>
-          <div className='flex gap-2 ml-auto mb-4'>
+          <div className='flex gap-2 ml-auto mb-4 items-center'>
             <label htmlFor='round'>회차:</label>
             <select
               id='round'

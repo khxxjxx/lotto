@@ -39,7 +39,7 @@ const LottoGenerator = (props: LottoGeneratorProps) => {
   if (_.isEmpty(lottoNumbers)) return <Loading />;
 
   return (
-    <main className='flex flex-col items-center p-8 min-h-screen'>
+    <main className='flex flex-col items-center p-8 min-h-dvh'>
       <h1 className='text-3xl font-bold mb-8'>퇴사 기원 로또</h1>
 
       <DrawInfo result={drawInfo} />
