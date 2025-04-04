@@ -5,7 +5,7 @@
   --foreground: #171717;
 }
 
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
@@ -27,6 +27,21 @@
   --color-black-60: #6e6e6e;
   --color-black-80: #4b4b4b;
   --color-black-100: #1c1c1c;
+
+  --animate-slideInOut: slideInOut 1s ease-in-out;
+
+  @keyframes slideInOut {
+    0%,
+    100% {
+      top: 10%;
+      opacity: 0;
+    }
+    40%,
+    60% {
+      top: 20%;
+      opacity: 1;
+    }
+  }
 }
 
 body {
