@@ -45,13 +45,7 @@ const Page = () => {
         className='flex items-center justify-center w-4 h-4 absolute left-8 top-10 cursor-pointer'
         onClick={router.back}
       >
-        <svg
-          width='9'
-          height='16'
-          viewBox='0 0 9 16'
-          fill='none'
-          xmlns='http://www.w3.org/2000/svg'
-        >
+        <svg width='9' height='16' viewBox='0 0 9 16' fill='none'>
           <path
             d='M8 1L1 8L8 15'
             stroke='currentColor'

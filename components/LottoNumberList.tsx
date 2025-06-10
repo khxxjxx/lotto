@@ -49,42 +49,52 @@ const LottoNumberList = (props: {
 
   return (
     <div className='flex flex-col gap-8 py-8'>
-      {lottoNumbers.map((numbers, index) => (
-        <div key={index} className='flex gap-6 items-center'>
-          {drawInfo ? (
-            <span className='text-center font-semibold w-8'>
-              {getRanking(numbers)}
-            </span>
-          ) : (
-            ''
-          )}
-          <div className='grid grid-cols-[repeat(6,minmax(0,48px))] gap-2 w-fit'>
-            {numbers.map(number => (
-              <div
-                key={number}
-                className={`${getNumberColor(number)} ${getMatchColor(
-                  number,
-                )} aspect-square w-full h-full rounded-full flex items-center justify-center text-white font-bold`}
-              >
-                {number}
-              </div>
-            ))}
-          </div>
+      {_.isEmpty(lottoNumbers[0]) ? (
+        <span className='font-semibold text-red-600 text-center'>
+          생성 중 오류가 발생하였습니다.
+          <br />
+          재생성 또는 재생성 설정을 확인해주세요.
+        </span>
+      ) : (
+        lottoNumbers.map((numbers, index) => (
+          <div key={index} className='flex gap-6 items-center whitespace-pre'>
+            {drawInfo ? (
+              <span className='text-[14px] text-center font-semibold w-8 -mr-3'>
+                {getRanking(numbers)}
+              </span>
+            ) : (
+              ''
+            )}
+            <div className='grid grid-cols-[repeat(6,minmax(0,48px))] gap-2 w-fit'>
+              {numbers.map(number => (
+                <div
+                  key={number}
+                  className={`${getNumberColor(number)} ${getMatchColor(
+                    number,
+                  )} aspect-square w-full h-full rounded-full flex items-center justify-center text-white font-bold`}
+                >
+                  {number}
+                </div>
+              ))}
+            </div>
 
-          <Button
-            width='auto'
-            variant='outlined'
-            size='sm'
-            disabled={
-              isSaveType &&
-              savedLottos[round + 1]?.some(lottos => _.isEqual(lottos, numbers))
-            }
-            onClick={() => buttonHandler(round, [numbers])}
-          >
-            {isSaveType ? '저장' : '삭제'}
-          </Button>
-        </div>
-      ))}
+            <Button
+              width='auto'
+              variant='outlined'
+              size='sm'
+              disabled={
+                isSaveType &&
+                savedLottos[round + 1]?.some(lottos =>
+                  _.isEqual(lottos, numbers),
+                )
+              }
+              onClick={() => buttonHandler(round, [numbers])}
+            >
+              {isSaveType ? '저장' : '삭제'}
+            </Button>
+          </div>
+        ))
+      )}
     </div>
   );
 };

@@ -10,8 +10,15 @@ import {
   useGenerateLottoStore,
   useHydrationStore,
   useSavedLottoStore,
+  useActiveModalStore,
 } from '@/store/lotto';
-import { Button, DrawInfo, Loading, LottoNumberList } from '@/components';
+import {
+  Button,
+  DrawInfo,
+  Loading,
+  LottoNumberList,
+  NumberSettingModal,
+} from '@/components';
 
 interface LottoGeneratorProps {
   title: string;
@@ -30,6 +37,7 @@ const LottoGenerator = (props: LottoGeneratorProps) => {
 
   const { saveLottos } = useSavedLottoStore();
   const { setLottoNumbers } = useGenerateLottoStore();
+  const { setActiveModal } = useActiveModalStore();
 
   useEffect(() => {
     if (_hasHydrated && _.isEmpty(lottoNumbers)) {
@@ -52,13 +60,7 @@ const LottoGenerator = (props: LottoGeneratorProps) => {
         size='sm'
         onClick={() => setLottoNumbers(getLottoNumbers())}
         startIcon={
-          <svg
-            xmlns='http://www.w3.org/2000/svg'
-            width='100%'
-            height='100%'
-            viewBox='0 0 14 16'
-            fill='none'
-          >
+          <svg width='100%' height='100%' viewBox='0 0 14 16' fill='none'>
             <path
               d='M5.70194 1.5505C3.88994 1.93695 2.37395 3.09498 1.47475 4.68713L1.14327 3.04013C1.08868 2.76893 0.824953 2.59064 0.561505 2.64682C0.298058 2.70301 0.124853 2.9745 0.179434 3.24569L0.845064 6.55293C0.899646 6.82412 1.16338 7.00242 1.42682 6.94624L4.63959 6.26103C4.90304 6.20485 5.07625 5.93336 5.02167 5.66217C4.96708 5.39097 4.70335 5.21267 4.43991 5.26886L2.03033 5.78276C2.72322 4.13113 4.15388 2.91542 5.90163 2.54267C8.82525 1.91914 11.6953 3.85944 12.301 6.86903C12.3556 7.14023 12.6193 7.31853 12.8827 7.26234C13.1462 7.20615 13.3194 6.93467 13.2648 6.66347C12.5486 3.10488 9.15888 0.813221 5.70194 1.5505Z'
               fill='black'
@@ -74,7 +76,19 @@ const LottoGenerator = (props: LottoGeneratorProps) => {
           </svg>
         }
       >
-        재생성
+        <span>
+          재생성
+          <span
+            className='text-black-40'
+            onClick={e => {
+              e.stopPropagation();
+              setActiveModal('numberSetting');
+            }}
+          >
+            {' '}
+            (설정)
+          </span>
+        </span>
       </Button>
 
       <div className='flex gap-4 items-center'>
@@ -88,6 +102,7 @@ const LottoGenerator = (props: LottoGeneratorProps) => {
           전체 저장
         </Button>
       </div>
+      <NumberSettingModal />
     </main>
   );
 };

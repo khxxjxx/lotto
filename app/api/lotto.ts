@@ -19,6 +19,7 @@ export const getDrawInfo = async (round: number): FetchReturn<DrawInfo> => {
   try {
     const response = await fetch(
       `https://www.dhlottery.co.kr/common.do?method=getLottoNumber&drwNo=${round}`,
+      { cache: 'no-store' },
     );
 
     if (!response.ok) {

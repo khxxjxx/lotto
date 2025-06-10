@@ -48,7 +48,7 @@ const DrawInfo = (props: { result?: Result<DrawInfo> }) => {
                 <div
                   className={`${getNumberColor(
                     data.bonusNumber,
-                  )} aspect-square rounded-full flex items-center text-[14px] justify-center text-white font-bold border-2`}
+                  )} aspect-square rounded-full flex items-center text-[14px] justify-center text-white font-bold border-2 border-yellow-500`}
                 >
                   {data.bonusNumber}
                 </div>

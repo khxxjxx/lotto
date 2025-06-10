@@ -8,11 +8,14 @@ const Page = async () => {
   const drawInfo = await getDrawInfo(currentRound);
 
   return (
-    <LottoGenerator
-      title='퇴사 기원 로또'
-      round={currentRound}
-      drawInfo={drawInfo}
-    />
+    <>
+      <LottoGenerator
+        title='퇴사 기원 로또'
+        round={currentRound}
+        drawInfo={drawInfo}
+      />
+      <div id='__root__portal' />
+    </>
   );
 };
 

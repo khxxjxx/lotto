@@ -19,24 +19,34 @@ interface ISavedLottoStore {
   removeLottos: (round: number, deleteLottos: number[][]) => void;
 }
 
+interface IInactiveNumberStore {
+  inactiveNumbers: number[];
+  setInactiveNumbers: (inactiveNumbers: number | number[]) => void;
+}
+
+interface IActiveModalStore {
+  activeModal?: string;
+  setActiveModal: (activeModal?: string) => void;
+}
+
 export const useHydrationStore = create(
   persist<IHydrationStore>(
-    (set) => ({
+    set => ({
       _hasHydrated: false,
-      setHasHydrated: (state) => set({ _hasHydrated: state }),
+      setHasHydrated: state => set({ _hasHydrated: state }),
     }),
     {
       name: '_hasHydrated',
-      onRehydrateStorage: (state) => () => state.setHasHydrated(true),
+      onRehydrateStorage: state => () => state.setHasHydrated(true),
     },
   ),
 );
 
 export const useGenerateLottoStore = create(
   persist<IGenerateLottoStore>(
-    (set) => ({
+    set => ({
       lottoNumbers: [],
-      setLottoNumbers: (lottoNumbers) => set({ lottoNumbers }),
+      setLottoNumbers: lottoNumbers => set({ lottoNumbers }),
     }),
     { name: 'lottoNumbers' },
   ),
@@ -44,10 +54,10 @@ export const useGenerateLottoStore = create(
 
 export const useSavedLottoStore = create(
   persist<ISavedLottoStore>(
-    (set) => ({
+    set => ({
       savedLottos: {},
       saveLottos: (round: number, newLottos) => {
-        set((state) => {
+        set(state => {
           // 저장시엔 다음 회차꺼 저장
           const nextRound = round + 1;
 
@@ -72,7 +82,7 @@ export const useSavedLottoStore = create(
       },
 
       removeLottos: (round: number, deleteLottos) => {
-        set((state) => {
+        set(state => {
           const savedLottos = state.savedLottos;
           const prevSavedLottoNumbers = savedLottos[round];
 
@@ -96,3 +106,28 @@ export const useSavedLottoStore = create(
     { name: 'savedLottos' },
   ),
 );
+
+export const useInactiveNumberStore = create(
+  persist<IInactiveNumberStore>(
+    set => ({
+      inactiveNumbers: [],
+      setInactiveNumbers: inactiveNumber =>
+        set(state => {
+          const inactiveNumbers = state.inactiveNumbers;
+
+          if (_.isArray(inactiveNumber))
+            return { inactiveNumbers: inactiveNumber };
+          else
+            return {
+              inactiveNumbers: _.xor(inactiveNumbers, [inactiveNumber]),
+            };
+        }),
+    }),
+    { name: 'inactiveNumbers' },
+  ),
+);
+
+export const useActiveModalStore = create<IActiveModalStore>(set => ({
+  activeModal: undefined,
+  setActiveModal: activeModal => set({ activeModal }),
+}));
