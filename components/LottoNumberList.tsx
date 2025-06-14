@@ -42,7 +42,7 @@ const LottoNumberList = (props: {
     if (!drawInfo) return '';
 
     if (drawInfo.numbers.includes(number)) return '';
-    if (drawInfo.bonusNumber === number) return '';
+    if (drawInfo.bonusNumber === number) return 'border-2 border-yellow-500';
 
     return 'opacity-30';
   }
